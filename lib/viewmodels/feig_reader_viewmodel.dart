@@ -13,7 +13,9 @@ class FeigReaderViewModel extends ChangeNotifier {
   String _lastIp = '';
   int _lastPort = 0;
 
-  List<TagData> _tags = const [];
+  // Keyed by serial number so each tag occupies one stable row.
+  // RSSI is updated in place; list is sorted alphabetically for consistency.
+  final Map<String, int> _tagMap = {};
   double _loopTimeMs = 0.0;
   bool _isRunning = false;
   StreamSubscription<InventoryResult>? _inventorySub;
@@ -22,9 +24,16 @@ class FeigReaderViewModel extends ChangeNotifier {
   String get statusMessage => _statusMessage;
   bool get isConnected => _state == ReaderConnectionState.connected;
   bool get isConnecting => _state == ReaderConnectionState.connecting;
-  List<TagData> get tags => _tags;
   double get loopTimeMs => _loopTimeMs;
   bool get isRunning => _isRunning;
+
+  List<TagData> get tags {
+    final entries = _tagMap.entries.toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
+    return entries
+        .map((e) => TagData(serialNumber: e.key, rssi: e.value))
+        .toList();
+  }
 
   Future<void> connect(String ip, int port) async {
     _state = ReaderConnectionState.connecting;
@@ -56,15 +65,21 @@ class FeigReaderViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearTags() {
+    _tagMap.clear();
+    notifyListeners();
+  }
+
   Future<void> startInventory() async {
     if (_isRunning) return;
     _isRunning = true;
-    _tags = const [];
     notifyListeners();
 
     _inventorySub = _service.startInventoryLoop().listen(
       (result) {
-        _tags = result.tags;
+        for (final tag in result.tags) {
+          _tagMap[tag.serialNumber] = tag.rssi;
+        }
         _loopTimeMs = result.loopTimeMs;
         notifyListeners();
       },

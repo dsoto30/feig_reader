@@ -319,6 +319,16 @@ class _FeigReaderViewState extends State<FeigReaderView> {
                               ),
                             ),
                           ),
+                          const Spacer(),
+                          if (vm.tags.isNotEmpty)
+                            TextButton.icon(
+                              onPressed: vm.clearTags,
+                              icon: const Icon(Icons.clear_all, size: 16),
+                              label: Text(
+                                'Clear',
+                                style: GoogleFonts.roboto(fontSize: 13),
+                              ),
+                            ),
                         ],
                       ),
                     ),
