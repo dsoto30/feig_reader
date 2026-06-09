@@ -20,12 +20,22 @@ class FeigReaderViewModel extends ChangeNotifier {
   bool _isRunning = false;
   StreamSubscription<InventoryResult>? _inventorySub;
 
+  static const List<int> denominations = [5, 25, 100, 500, 1000];
+  int _denomination = 5;
+
   ReaderConnectionState get state => _state;
   String get statusMessage => _statusMessage;
   bool get isConnected => _state == ReaderConnectionState.connected;
   bool get isConnecting => _state == ReaderConnectionState.connecting;
   double get loopTimeMs => _loopTimeMs;
   bool get isRunning => _isRunning;
+  int get denomination => _denomination;
+  int get totalValue => _tagMap.length * _denomination;
+
+  void setDenomination(int value) {
+    _denomination = value;
+    notifyListeners();
+  }
 
   List<TagData> get tags {
     final entries = _tagMap.entries.toList()

@@ -51,6 +51,17 @@ class _FeigReaderViewState extends State<FeigReaderView> {
     return null;
   }
 
+  String _formatCurrency(int amount) {
+    final s = amount.toString();
+    final buf = StringBuffer('\$');
+    final offset = s.length % 3;
+    for (int i = 0; i < s.length; i++) {
+      if (i > 0 && (i - offset) % 3 == 0) buf.write(',');
+      buf.write(s[i]);
+    }
+    return buf.toString();
+  }
+
   Color _rssiColor(int rssi) {
     if (rssi > 200) return const Color(0xFF4CAF50);
     if (rssi > 100) return const Color(0xFFFF9800);
@@ -233,7 +244,7 @@ class _FeigReaderViewState extends State<FeigReaderView> {
                                         size: 18,
                                       ),
                                       label: Text(
-                                        'Start Inventory',
+                                        'Start Scan',
                                         style: GoogleFonts.roboto(
                                           fontWeight: FontWeight.w600,
                                         ),
@@ -273,7 +284,7 @@ class _FeigReaderViewState extends State<FeigReaderView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Header row with title + count badge
+                    // Header: tag count + denomination chips + total
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 20,
@@ -289,46 +300,100 @@ class _FeigReaderViewState extends State<FeigReaderView> {
                           ),
                         ),
                       ),
-                      child: Row(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Tags',
-                            style: GoogleFonts.roboto(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 3,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              '${vm.tags.length}',
-                              style: GoogleFonts.roboto(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700,
-                                color:
-                                    Theme.of(context).colorScheme.onPrimary,
+                          // Row 1: Tags count + Clear
+                          Row(
+                            children: [
+                              Text(
+                                'Tags',
+                                style: GoogleFonts.roboto(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
+                                ),
                               ),
-                            ),
-                          ),
-                          const Spacer(),
-                          if (vm.tags.isNotEmpty)
-                            TextButton.icon(
-                              onPressed: vm.clearTags,
-                              icon: const Icon(Icons.clear_all, size: 16),
-                              label: Text(
-                                'Clear',
-                                style: GoogleFonts.roboto(fontSize: 13),
+                              const SizedBox(width: 10),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  '${vm.tags.length}',
+                                  style: GoogleFonts.roboto(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimary,
+                                  ),
+                                ),
                               ),
-                            ),
+                              const Spacer(),
+                              if (vm.tags.isNotEmpty)
+                                TextButton.icon(
+                                  onPressed: vm.clearTags,
+                                  icon: const Icon(Icons.clear_all, size: 16),
+                                  label: Text(
+                                    'Clear',
+                                    style: GoogleFonts.roboto(fontSize: 13),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          // Row 2: Denomination chip selector
+                          Wrap(
+                            spacing: 8,
+                            children: FeigReaderViewModel.denominations
+                                .map(
+                                  (d) => ChoiceChip(
+                                    label: Text(
+                                      '\$$d',
+                                      style: GoogleFonts.roboto(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    selected: vm.denomination == d,
+                                    onSelected: (_) => vm.setDenomination(d),
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                          const SizedBox(height: 10),
+                          // Row 3: Total
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.baseline,
+                            textBaseline: TextBaseline.alphabetic,
+                            children: [
+                              Text(
+                                'Total',
+                                style: GoogleFonts.roboto(
+                                  fontSize: 13,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                _formatCurrency(vm.totalValue),
+                                style: GoogleFonts.roboto(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.w700,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
