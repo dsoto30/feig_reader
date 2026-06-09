@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../viewmodels/feig_reader_viewmodel.dart';
 import '../widgets/connection_status_indicator.dart';
+import '../widgets/signal_stats_widget.dart';
 
 class FeigReaderView extends StatefulWidget {
   final FeigReaderViewModel viewModel;
@@ -235,6 +236,20 @@ class _FeigReaderViewState extends State<FeigReaderView> {
                                 ],
                               ),
                             ],
+                          ],
+
+                          // ── Signal stats ───────────────────────────────
+                          if (vm.isRunning || vm.minRssi != null) ...[
+                            const SizedBox(height: 28),
+                            const Divider(),
+                            const SizedBox(height: 20),
+                            SignalStatsWidget(
+                              statusByte: vm.lastStatusByte,
+                              statusDesc: vm.lastStatusDesc,
+                              min: vm.minRssi,
+                              max: vm.maxRssi,
+                              avg: vm.avgRssi,
+                            ),
                           ],
                         ],
                       ),

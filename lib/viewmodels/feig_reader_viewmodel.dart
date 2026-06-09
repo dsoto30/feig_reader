@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 import '../models/tag_data.dart';
 import '../services/feig_reader_service.dart';
+import '../utils/feig_protocol.dart';
 
 enum ReaderConnectionState { idle, connecting, connected, failed }
 
@@ -18,6 +20,7 @@ class FeigReaderViewModel extends ChangeNotifier {
   final Map<String, int> _tagMap = {};
   double _loopTimeMs = 0.0;
   bool _isRunning = false;
+  int _lastStatusByte = 0;
   StreamSubscription<InventoryResult>? _inventorySub;
 
   static const List<int> denominations = [5, 25, 100, 500, 1000];
@@ -31,6 +34,18 @@ class FeigReaderViewModel extends ChangeNotifier {
   bool get isRunning => _isRunning;
   int get denomination => _denomination;
   int get totalValue => _tagMap.length * _denomination;
+
+  int? get minRssi =>
+      _tagMap.isEmpty ? null : _tagMap.values.reduce(min);
+  int? get maxRssi =>
+      _tagMap.isEmpty ? null : _tagMap.values.reduce(max);
+  double? get avgRssi =>
+      _tagMap.isEmpty
+          ? null
+          : _tagMap.values.fold(0, (a, b) => a + b) / _tagMap.length;
+
+  int get lastStatusByte => _lastStatusByte;
+  String get lastStatusDesc => describeStatus(_lastStatusByte);
 
   void setDenomination(int value) {
     _denomination = value;
@@ -93,6 +108,7 @@ class FeigReaderViewModel extends ChangeNotifier {
             result.tags.map((t) => MapEntry(t.serialNumber, t.rssi)),
           );
         _loopTimeMs = result.loopTimeMs;
+        _lastStatusByte = result.statusByte;
         notifyListeners();
       },
       onError: (Object _) {

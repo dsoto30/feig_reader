@@ -2,6 +2,35 @@ import 'dart:typed_data';
 import '../models/tag_data.dart';
 import 'feig_utils.dart';
 
+String describeStatus(int status) {
+  switch (status) {
+    case 0x00: return 'OK';
+    case 0x01: return 'No Transponder';
+    case 0x02: return 'Data False (CRC error)';
+    case 0x03: return 'Write Error';
+    case 0x04: return 'Address Error';
+    case 0x05: return 'Wrong Transponder Type';
+    case 0x10: return 'EEPROM Failure';
+    case 0x11: return 'Parameter Range Error';
+    case 0x13: return 'Login Required';
+    case 0x14: return 'Login Error (wrong password)';
+    case 0x15: return 'Read Protect';
+    case 0x16: return 'Write Protect';
+    case 0x17: return 'Firmware Activation Required';
+    case 0x80: return 'Unknown Command';
+    case 0x81: return 'Length Error';
+    case 0x82: return 'Command Not Available';
+    case 0x83: return 'RF Communication Error';
+    case 0x84: return 'RF Warning';
+    case 0x92: return 'No Valid Data';
+    case 0x93: return 'Data Buffer Overflow';
+    case 0x94: return 'Tag Error';
+    case 0x95: return 'More Data Available';
+    default:
+      return 'Unknown (0x${status.toRadixString(16).padLeft(2, '0').toUpperCase()})';
+  }
+}
+
 const int inventoryResponseStatusByte = 5;
 const int inventoryResponseDatasetsByte = 6;
 const int maskUpperByte = 0xFF;
