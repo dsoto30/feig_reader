@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(flutter pub *)",
-      "Bash(flutter analyze *)"
+      "Bash(flutter analyze *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\dsoto\\\\BikeProjects\\\\Bike2026\\\\feig_reader\" -Recurse -Directory)",
+      "Bash(Select-Object FullName)"
     ]
   }
 }

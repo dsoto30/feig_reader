@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'bindings/performance_counter.dart';
 import 'viewmodels/feig_reader_viewmodel.dart';
 import 'views/feig_reader_view.dart';
 
 void main() {
+  PerformanceCounter.init();
   runApp(const FeigReaderApp());
 }
 

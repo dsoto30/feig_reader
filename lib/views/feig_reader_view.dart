@@ -52,6 +52,12 @@ class _FeigReaderViewState extends State<FeigReaderView> {
     return null;
   }
 
+  Color _rssiColor(int rssi) {
+    if (rssi > 200) return const Color(0xFF4CAF50);
+    if (rssi > 100) return const Color(0xFFFF9800);
+    return const Color(0xFFF44336);
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -82,6 +88,7 @@ class _FeigReaderViewState extends State<FeigReaderView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      // ── Connection section ──────────────────────────────
                       Text(
                         'Connection',
                         style: GoogleFonts.roboto(
@@ -115,9 +122,7 @@ class _FeigReaderViewState extends State<FeigReaderView> {
                         style: GoogleFonts.robotoMono(fontSize: 15),
                         keyboardType: TextInputType.number,
                         inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                            RegExp(r'[\d.]'),
-                          ),
+                          FilteringTextInputFormatter.allow(RegExp(r'[\d.]')),
                         ],
                         validator: _validateIp,
                         textInputAction: TextInputAction.next,
@@ -165,8 +170,7 @@ class _FeigReaderViewState extends State<FeigReaderView> {
                                   foregroundColor:
                                       Theme.of(context).colorScheme.error,
                                   side: BorderSide(
-                                    color:
-                                        Theme.of(context).colorScheme.error,
+                                    color: Theme.of(context).colorScheme.error,
                                   ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
@@ -206,6 +210,132 @@ class _FeigReaderViewState extends State<FeigReaderView> {
                         state: vm.state,
                         message: vm.statusMessage,
                       ),
+
+                      // ── Inventory section (connected only) ──────────────
+                      if (vm.isConnected) ...[
+                        const SizedBox(height: 28),
+                        const Divider(),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Inventory',
+                          style: GoogleFonts.roboto(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          height: 48,
+                          child: vm.isRunning
+                              ? OutlinedButton.icon(
+                                  onPressed: vm.stopInventory,
+                                  icon: const Icon(Icons.stop_circle_outlined),
+                                  label: Text(
+                                    'Stop',
+                                    style: GoogleFonts.roboto(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  style: OutlinedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                )
+                              : FilledButton.icon(
+                                  onPressed: vm.startInventory,
+                                  icon: const Icon(Icons.play_circle_outlined),
+                                  label: Text(
+                                    'Start Inventory',
+                                    style: GoogleFonts.roboto(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  style: FilledButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                ),
+                        ),
+                        if (vm.isRunning || vm.loopTimeMs > 0) ...[
+                          const SizedBox(height: 10),
+                          Text(
+                            'Loop: ${vm.loopTimeMs.toStringAsFixed(1)} ms',
+                            style: GoogleFonts.robotoMono(
+                              fontSize: 13,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 16),
+                        if (vm.tags.isEmpty)
+                          Text(
+                            vm.isRunning ? 'Scanning…' : 'No tags detected',
+                            style: GoogleFonts.roboto(
+                              fontSize: 14,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant,
+                            ),
+                          )
+                        else
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: vm.tags.length,
+                            itemBuilder: (context, index) {
+                              final tag = vm.tags[index];
+                              return Card(
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 4),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 10,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          tag.serialNumber,
+                                          style: GoogleFonts.robotoMono(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                          vertical: 4,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: _rssiColor(tag.rssi),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        child: Text(
+                                          'RSSI ${tag.rssi}',
+                                          style: GoogleFonts.roboto(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                      ],
                     ],
                   ),
                 ),
