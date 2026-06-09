@@ -49,7 +49,7 @@ List<TagData> parseInventoryResponse(Uint8List bytes) {
         .join();
     tags.add(TagData(serialNumber: sn, rssi: bytes[rssiOffset]));
 
-    offset += leninfo + 8;
+    offset = rssiOffset + 8;
   }
 
   return tags;

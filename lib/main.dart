@@ -19,7 +19,7 @@ class FeigReaderApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF1565C0),
+          seedColor: const Color(0xFF29B6F6),
           brightness: Brightness.light,
         ),
         textTheme: GoogleFonts.robotoTextTheme(),
@@ -27,7 +27,7 @@ class FeigReaderApp extends StatelessWidget {
       ),
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF1565C0),
+          seedColor: const Color(0xFF29B6F6),
           brightness: Brightness.dark,
         ),
         textTheme: GoogleFonts.robotoTextTheme(ThemeData.dark().textTheme),
