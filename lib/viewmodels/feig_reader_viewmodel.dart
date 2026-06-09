@@ -87,9 +87,11 @@ class FeigReaderViewModel extends ChangeNotifier {
 
     _inventorySub = _service.startInventoryLoop().listen(
       (result) {
-        for (final tag in result.tags) {
-          _tagMap[tag.serialNumber] = tag.rssi;
-        }
+        _tagMap
+          ..clear()
+          ..addEntries(
+            result.tags.map((t) => MapEntry(t.serialNumber, t.rssi)),
+          );
         _loopTimeMs = result.loopTimeMs;
         notifyListeners();
       },

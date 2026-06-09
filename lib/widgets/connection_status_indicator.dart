@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../viewmodels/feig_reader_viewmodel.dart'
-    show ReaderConnectionState;
+import '../viewmodels/feig_reader_viewmodel.dart' show ReaderConnectionState;
 
 class ConnectionStatusIndicator extends StatelessWidget {
   final ReaderConnectionState state;
@@ -14,19 +13,22 @@ class ConnectionStatusIndicator extends StatelessWidget {
   });
 
   Color get _dotColor => switch (state) {
-        ReaderConnectionState.connected => const Color(0xFF4CAF50),
-        ReaderConnectionState.connecting => const Color(0xFFFF9800),
-        ReaderConnectionState.failed => const Color(0xFFF44336),
-        ReaderConnectionState.idle => const Color(0xFF9E9E9E),
-      };
+    ReaderConnectionState.connected => const Color(0xFF15803D),
+    ReaderConnectionState.connecting => const Color(0xFFB45309),
+    ReaderConnectionState.failed => const Color(0xFFB91C1C),
+    ReaderConnectionState.idle => const Color(0xFF64748B),
+  };
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        color: cs.surfaceContainerLow,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: cs.outlineVariant),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -54,7 +56,7 @@ class ConnectionStatusIndicator extends StatelessWidget {
               style: GoogleFonts.roboto(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: Theme.of(context).colorScheme.onSurface,
+                color: cs.onSurface,
               ),
             ),
           ),
