@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'bindings/performance_counter.dart';
-import 'viewmodels/feig_reader_viewmodel.dart';
 import 'views/feig_reader_view.dart';
 
 const _brandBlue = Color(0xFF1D4ED8);
@@ -11,7 +11,7 @@ const _slate50 = Color(0xFFF8FAFC);
 
 void main() {
   PerformanceCounter.init();
-  runApp(const FeigReaderApp());
+  runApp(const ProviderScope(child: FeigReaderApp()));
 }
 
 class FeigReaderApp extends StatelessWidget {
@@ -24,7 +24,7 @@ class FeigReaderApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: _buildTheme(Brightness.light),
       darkTheme: _buildTheme(Brightness.dark),
-      home: FeigReaderView(viewModel: FeigReaderViewModel()),
+      home: const FeigReaderView(),
     );
   }
 

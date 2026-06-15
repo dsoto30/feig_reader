@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../viewmodels/feig_reader_viewmodel.dart' show ReaderConnectionState;
+import '../providers/feig_reader_provider.dart' show ReaderConnectionState;
 
 class ConnectionStatusIndicator extends StatelessWidget {
   final ReaderConnectionState state;
